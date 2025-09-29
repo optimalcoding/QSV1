@@ -1,3 +1,7 @@
+Constants.java, teleop.java, and robot.java are committed to the newest variants
+  
+  
+  
   ## NOTICE
 
 This repository contains the public FTC SDK for the DECODE (2025-2026) competition season.
