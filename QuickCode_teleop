@@ -1,0 +1,198 @@
+package org.firstinspires.ftc.teamcode;
+
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+import java.util.Arrays;
+
+@TeleOp(name = "Teleop")
+public class Teleop extends LinearOpMode {
+
+    final double FEED_TIME_SECONDS = 0.20;
+
+    Robot robot = new Robot();
+    int robotCycle = 0;
+
+    private enum LaunchState {
+        IDLE,
+        SPIN_UP,
+        LAUNCH,
+        LAUNCHING,
+    }
+
+    private LaunchState launchState;
+
+    final double LAUNCHER_TARGET_VELOCITY = 1125;
+    final double LAUNCHER_MIN_VELOCITY = 1075;
+    final double STOP_SPEED = 0.0;
+    final double FULL_SPEED = 1.0;
+    ElapsedTime feederTimer = new ElapsedTime();
+
+
+
+
+
+    // Servo claw1;
+    // double setPosition = 0.0;
+    //double clawpivot1Position = 0.5;
+    //double clawpivot2Position = 0.5;
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        launchState = LaunchState.IDLE;
+
+
+
+
+
+
+        //initialization variables, notifying robot is initialized and shows how long robot ran for
+        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Runtime " + robot.runtime.toString());
+        telemetry.update();
+
+
+        robot.init(hardwareMap);
+
+        // robot.init(hardwareMap);
+        //robot.lift1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //robot.lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot.launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.launcher.setZeroPowerBehavior(BRAKE);
+        robot.launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
+
+
+
+
+
+
+        // robot.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            telemetry.addData("Robot Cycle", robotCycle);
+            //  telemetry.addData("Arm Encoder Value", robot.lift.getCurrentPosition());
+            telemetry.addData("Match Time (s)", getRuntime());
+            telemetry.addData("FL Count", robot.frontLeft.getCurrentPosition());
+            telemetry.addData("FR Count", robot.frontRight.getCurrentPosition());
+            telemetry.addData("BL Count", robot.backLeft.getCurrentPosition());
+            telemetry.addData("BR Count", robot.backRight.getCurrentPosition());
+            telemetry.addData("intake Count", robot.intake.getCurrentPosition());
+            telemetry.addData("Status", "Resetting Values");
+            telemetry.update();
+
+
+
+            //controller 1 functions
+            double FrontLeftVal = gamepad1.left_stick_y - gamepad1.left_stick_x + -gamepad1.right_stick_x;
+            double FrontRightVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+            double BackLeftVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
+            double BackRightVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+
+
+
+            //Powerplay controller configs for reference to centerstage indirect drive
+            //     double FrontLeftVal = gamepad1.left_stick_y - gamepad1.left_stick_x + -gamepad1.right_stick_x;
+            //     double FrontRightVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+            //     double BackLeftVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
+            //     double BackRightVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+
+
+            // change orientation bc going forward is backwards
+            //Move range to between 0 and +1, if not already
+            double[] wheelPowers = {FrontRightVal, FrontLeftVal, BackLeftVal, BackRightVal};
+            Arrays.sort(wheelPowers);
+            if (wheelPowers[3] > 1) {
+                FrontLeftVal /= wheelPowers[3];
+                FrontRightVal /= wheelPowers[3];
+                BackRightVal /= wheelPowers[3];
+                BackLeftVal /= wheelPowers[3];
+
+            }
+
+            robot.frontLeft.setPower(FrontLeftVal * 0.6);
+            robot.frontRight.setPower(FrontRightVal * 0.6);
+            robot.backLeft.setPower(BackLeftVal * 0.6);
+            robot.backRight.setPower(BackRightVal * 0.6);
+            robot.intake.setPower(-gamepad2.left_stick_y);
+
+
+            telemetry.addData("frontLeft", FrontLeftVal); // Note: driver hub shows this and the count version but idk why nor what it is
+            telemetry.addData("frontRight", FrontRightVal);
+            telemetry.addData("backLeft", BackLeftVal);
+            telemetry.addData("backRight", BackRightVal);
+
+            telemetry.update();
+            // set power to wheel motors
+            robot.frontLeft.setPower(FrontLeftVal);
+            robot.frontRight.setPower(FrontRightVal);
+            robot.backLeft.setPower(BackLeftVal);
+            robot.backRight.setPower(BackRightVal);
+
+            if (gamepad1.y) {
+                robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+            } else if (gamepad1.b) { // stop flywheel
+                robot.launcher.setVelocity(STOP_SPEED);
+            }
+
+            /*
+             * Now we call our "Launch" function.
+             */
+            launch(gamepad1.rightBumperWasPressed());
+
+            /*
+             * Show the state and motor powers
+             */
+            telemetry.addData("State", launchState);
+            telemetry.addData("feedmotorspeed", robot.feeder.getCurrentPosition());
+            telemetry.addData("motorSpeed", robot.launcher.getVelocity());
+
+        }
+
+
+
+
+
+            idle();
+        }
+    void launch(boolean shotRequested) {
+        switch (launchState) {
+            case IDLE:
+                if (shotRequested) {
+                    launchState = LaunchState.SPIN_UP;
+                }
+                break;
+            case SPIN_UP:
+                robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+                if (robot.launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
+                    launchState = LaunchState.LAUNCH;
+                }
+                break;
+            case LAUNCH:
+                robot.feeder.setPower(FULL_SPEED);
+
+                feederTimer.reset();
+                launchState = LaunchState.LAUNCHING;
+                break;
+            case LAUNCHING:
+                if (feederTimer.seconds() > FEED_TIME_SECONDS) {
+                    launchState = LaunchState.IDLE;
+                    robot.feeder.setPower(STOP_SPEED);
+                }
+                break;
+        }
+    }
+    }
