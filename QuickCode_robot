@@ -1,15 +1,10 @@
 
 package org.firstinspires.ftc.teamcode;
-
-
-
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,11 +16,8 @@ public class Robot {
     public DcMotor backRight;
     public DcMotor frontLeft;
     public DcMotor backLeft;
-
     public DcMotorEx launcher;
-
     public DcMotor feeder;
-
     public DcMotor intake;
 
 
@@ -56,8 +48,6 @@ public class Robot {
         feeder = hwMap.get(DcMotor.class, "feeder");
         intake = hwMap.get(DcMotor.class, "intake");
 
-
-
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -67,10 +57,13 @@ public class Robot {
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcher.setZeroPowerBehavior(BRAKE);
+
+        frontLeft.setZeroPowerBehavior(BRAKE);
+        frontRight.setZeroPowerBehavior(BRAKE);
+        backLeft.setZeroPowerBehavior(BRAKE);
+        backRight.setZeroPowerBehavior(BRAKE);
+        
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
-
-
-
 
         // Setting motor directions to turn
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -82,8 +75,6 @@ public class Robot {
 
         // forward = clockwise tetrix 0.0-1.0 counter is -1.0 to -0.0
         //no need to def direction bc its reg servo
-
-
 
     }
 
