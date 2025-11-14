@@ -68,6 +68,7 @@ public class Teleop extends LinearOpMode {
         robot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.feeder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         robot.launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.launcher.setZeroPowerBehavior(BRAKE);
@@ -91,6 +92,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("BL Count", robot.backLeft.getCurrentPosition());
             telemetry.addData("BR Count", robot.backRight.getCurrentPosition());
             telemetry.addData("intake Count", robot.intake.getCurrentPosition());
+
             telemetry.addData("Status", "Resetting Values");
             telemetry.update();
 
@@ -130,6 +132,7 @@ public class Teleop extends LinearOpMode {
             robot.intake.setPower(-gamepad2.left_stick_y);
 
 
+
             telemetry.addData("frontLeft", FrontLeftVal); // Note: driver hub shows this and the count version but idk why nor what it is
             telemetry.addData("frontRight", FrontRightVal);
             telemetry.addData("backLeft", BackLeftVal);
@@ -142,9 +145,10 @@ public class Teleop extends LinearOpMode {
             robot.backLeft.setPower(BackLeftVal);
             robot.backRight.setPower(BackRightVal);
 
-            if (gamepad1.y) {
+            if (gamepad2.y) {
                 robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-            } else if (gamepad1.b) { // stop flywheel
+
+            } else if (gamepad2.b) { // stop flywheel
                 robot.launcher.setVelocity(STOP_SPEED);
             }
 
@@ -166,8 +170,8 @@ public class Teleop extends LinearOpMode {
 
 
 
-            idle();
-        }
+        idle();
+    }
     void launch(boolean shotRequested) {
         switch (launchState) {
             case IDLE:
@@ -195,4 +199,4 @@ public class Teleop extends LinearOpMode {
                 break;
         }
     }
-    }
+}
