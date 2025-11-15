@@ -28,7 +28,7 @@ public class Teleop extends LinearOpMode {
 
     private LaunchState launchState;
 
-    final double LAUNCHER_TARGET_VELOCITY = 1125;
+    final double LAUNCHER_TARGET_VELOCITY = 2000;
     final double LAUNCHER_MIN_VELOCITY = 1075;
     final double STOP_SPEED = 0.0;
     final double FULL_SPEED = 1.0;
@@ -91,7 +91,6 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("FR Count", robot.frontRight.getCurrentPosition());
             telemetry.addData("BL Count", robot.backLeft.getCurrentPosition());
             telemetry.addData("BR Count", robot.backRight.getCurrentPosition());
-            telemetry.addData("intake Count", robot.intake.getCurrentPosition());
 
             telemetry.addData("Status", "Resetting Values");
             telemetry.update();
@@ -99,18 +98,18 @@ public class Teleop extends LinearOpMode {
 
 
             //controller 1 functions
-            double FrontLeftVal = gamepad1.left_stick_y - gamepad1.left_stick_x + -gamepad1.right_stick_x;
-            double FrontRightVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
-            double BackLeftVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
-            double BackRightVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+          //  double FrontLeftVal = gamepad1.left_stick_y - gamepad1.left_stick_x + -gamepad1.right_stick_x;
+          //  double FrontRightVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+          //  double BackLeftVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
+          //  double BackRightVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
 
 
 
             //Powerplay controller configs for reference to centerstage indirect drive
-            //     double FrontLeftVal = gamepad1.left_stick_y - gamepad1.left_stick_x + -gamepad1.right_stick_x;
-            //     double FrontRightVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
-            //     double BackLeftVal = gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
-            //     double BackRightVal = gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+            double FrontLeftVal = -gamepad1.left_stick_y - gamepad1.left_stick_x + -gamepad1.right_stick_x;
+            double FrontRightVal = -gamepad1.left_stick_y + (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
+            double BackLeftVal = -gamepad1.left_stick_y + (gamepad1.left_stick_x) + -gamepad1.right_stick_x;
+            double BackRightVal = -gamepad1.left_stick_y - (gamepad1.left_stick_x) - -gamepad1.right_stick_x;
 
 
             // change orientation bc going forward is backwards
@@ -147,15 +146,17 @@ public class Teleop extends LinearOpMode {
 
             if (gamepad2.y) {
                 robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+                robot.feeder.setPower(FULL_SPEED);
 
             } else if (gamepad2.b) { // stop flywheel
                 robot.launcher.setVelocity(STOP_SPEED);
+                robot.feeder.setPower(STOP_SPEED);
             }
 
             /*
              * Now we call our "Launch" function.
              */
-            launch(gamepad1.rightBumperWasPressed());
+            launch(gamepad2.rightBumperWasPressed());
 
             /*
              * Show the state and motor powers
