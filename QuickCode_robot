@@ -62,7 +62,7 @@ public class Robot {
         frontRight.setZeroPowerBehavior(BRAKE);
         backLeft.setZeroPowerBehavior(BRAKE);
         backRight.setZeroPowerBehavior(BRAKE);
-        
+
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
 
         // Setting motor directions to turn
@@ -70,7 +70,7 @@ public class Robot {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.FORWARD);
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         feeder.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // forward = clockwise tetrix 0.0-1.0 counter is -1.0 to -0.0
